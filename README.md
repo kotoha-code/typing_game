@@ -1,2 +1,105 @@
 # typing_game
 creating typing game with c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <time.h>
+
+int score_record(int score, int total){
+    FILE* fp= fopen("text.txt","a");
+    if(fp==NULL){
+        printf("cannot open file");
+        return 0;
+    }
+    fprintf(fp,"正答数記録\n");
+    fprintf(fp,"%d/%d\n",score,total);
+
+    fclose(fp);
+    printf("今回の正答数をtextファイルに追加しました。");
+    return 0;
+}
+
+void dictionary_quiz(const char* filename){
+    char dictionary[100][100];
+            int line_count=0;
+            FILE* fp=fopen(filename,"r");
+
+            if(fp==NULL){
+                printf("ごめんなさい。エラーが発生しました。");
+                return;
+            }
+
+            while (fscanf(fp,"%s",dictionary[line_count])!=EOF){
+                line_count++;
+            }
+            fclose(fp);
+
+            printf("タイピングゲームを始めます！制限時間は30秒間です。\n");
+            int score=0;
+            int mistake=0;
+            bool check[100]={};
+            time_t start=time(NULL);
+            int computational_time;
+            while (computational_time<=30){
+                srandom((unsigned)time(NULL));
+                int x;
+                do{
+                    x=random()%100;
+                }while(check[x]);
+                check[x]=true;
+
+                printf("%s\n",dictionary[x]);
+                char input[100];
+                scanf("%s",input);
+
+                if(strcmp(dictionary[x],input)==0){
+                    printf("正解です\n");
+                    score+=1;
+                }else{
+                    printf("不正解です\n");
+                    mistake+=1;
+                }
+            time_t end=time(NULL);
+            computational_time=(int)difftime(end,start);
+            }
+            int total=score+mistake;
+            double rate=100*score/total;
+            printf("お疲れ様でした。正答数は%d問中%d問で、",total,score);
+            printf("正答率は%.1f％です。\n",rate);
+            
+            score_record(score,total);
+
+}
+
+int main(void){
+    printf("0~2の数字を入力して難易度を選んでください。\n[0:EASY/1:NORMAL/2:HARD]\n難易度：");
+    int mode;
+    scanf("%d",&mode);
+    const char* filename;
+
+    switch(mode){
+        case 0:
+            printf("EASY MODEでゲームを始めます。\n");
+            filename="dictionary_easy.txt";
+            dictionary_quiz(filename);
+            break;
+
+        case 1:
+            printf("NOMAL MODEでゲームを始めます。\n");
+            filename="dictionary_normal.txt";
+            dictionary_quiz(filename);
+            break;
+        case 2:
+            printf("HARD MODEでゲームを始めます。\n");
+            filename="dictionary_hard.txt";
+            dictionary_quiz(filename);
+            break;
+        default:
+            printf("無効な数字を入力しましたね。0~2の中から選んでください。");
+            break;
+    }
+    return 0;
+}
+   
