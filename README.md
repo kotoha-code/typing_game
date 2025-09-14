@@ -1,105 +1,30 @@
 # typing_game
 creating typing game with c
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <time.h>
+# C言語 タイピングゲーム
 
-int score_record(int score, int total){
-    FILE* fp= fopen("text.txt","a");
-    if(fp==NULL){
-        printf("cannot open file");
-        return 0;
-    }
-    fprintf(fp,"正答数記録\n");
-    fprintf(fp,"%d/%d\n",score,total);
+[![Language](https://img.shields.io/badge/language-C-blue.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
 
-    fclose(fp);
-    printf("今回の正答数をtextファイルに追加しました。");
-    return 0;
-}
+C言語で作成した、シンプルなコンソール（ターミナル）で動作するタイピングゲームです。
+制限時間内に表示される単語をどれだけ正確にタイピングできるかを競います。
 
-void dictionary_quiz(const char* filename){
-    char dictionary[100][100];
-            int line_count=0;
-            FILE* fp=fopen(filename,"r");
+---
 
-            if(fp==NULL){
-                printf("ごめんなさい。エラーが発生しました。");
-                return;
-            }
+## 概要
 
-            while (fscanf(fp,"%s",dictionary[line_count])!=EOF){
-                line_count++;
-            }
-            fclose(fp);
+このゲームは、C言語の基本的なファイル操作、文字列操作、時間計測の学習を目的として作成しました。プレイヤーは難易度を選択し、30秒間のタイムアタックに挑戦します。ゲーム終了後には、正答数と正答率が表示され、結果がテキストファイルに記録されます。
 
-            printf("タイピングゲームを始めます！制限時間は30秒間です。\n");
-            int score=0;
-            int mistake=0;
-            bool check[100]={};
-            time_t start=time(NULL);
-            int computational_time;
-            while (computational_time<=30){
-                srandom((unsigned)time(NULL));
-                int x;
-                do{
-                    x=random()%100;
-                }while(check[x]);
-                check[x]=true;
+## ✨ 主な機能
 
-                printf("%s\n",dictionary[x]);
-                char input[100];
-                scanf("%s",input);
+- **3段階の難易度選択**: EASY, NORMAL, HARDの3つのレベルから選べます。
+- **タイムアタック形式**: 制限時間は30秒です。
+- **結果表示**: 正答数、総問題数、正答率をパーセンテージで表示します。
+- **スコア記録**: ゲーム結果が `text.txt` ファイルに自動で追記され、過去の成績を確認できます。
+- **ランダムな出題**: 辞書ファイルから単語をランダムに選んで出題します。
 
-                if(strcmp(dictionary[x],input)==0){
-                    printf("正解です\n");
-                    score+=1;
-                }else{
-                    printf("不正解です\n");
-                    mistake+=1;
-                }
-            time_t end=time(NULL);
-            computational_time=(int)difftime(end,start);
-            }
-            int total=score+mistake;
-            double rate=100*score/total;
-            printf("お疲れ様でした。正答数は%d問中%d問で、",total,score);
-            printf("正答率は%.1f％です。\n",rate);
-            
-            score_record(score,total);
+## 🖥️ 動作環境
 
-}
+- C言語コンパイラ (GCCなど)
+- ターミナル（コマンドプロンプト、PowerShell, etc.）
 
-int main(void){
-    printf("0~2の数字を入力して難易度を選んでください。\n[0:EASY/1:NORMAL/2:HARD]\n難易度：");
-    int mode;
-    scanf("%d",&mode);
-    const char* filename;
-
-    switch(mode){
-        case 0:
-            printf("EASY MODEでゲームを始めます。\n");
-            filename="dictionary_easy.txt";
-            dictionary_quiz(filename);
-            break;
-
-        case 1:
-            printf("NOMAL MODEでゲームを始めます。\n");
-            filename="dictionary_normal.txt";
-            dictionary_quiz(filename);
-            break;
-        case 2:
-            printf("HARD MODEでゲームを始めます。\n");
-            filename="dictionary_hard.txt";
-            dictionary_quiz(filename);
-            break;
-        default:
-            printf("無効な数字を入力しましたね。0~2の中から選んでください。");
-            break;
-    }
-    return 0;
-}
    
